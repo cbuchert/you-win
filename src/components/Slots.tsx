@@ -1,59 +1,52 @@
-import { FC, MutableRefObject, useEffect, useRef, useState } from "react"
-import { Images, Slot } from "./Slot.tsx"
+import { FC, useEffect, useState } from "react"
+import { Images } from "../App.tsx"
+import { Slot } from "./Slot.tsx"
 
-type Props = {}
+type Props = {
+  images: Images
+}
 
-export const Slots: FC<Props> = () => {
-  const [ slotOptions, setSlotOptions ] = useState<Images[]>([ new Map(), new Map(), new Map() ])
-  const fruits = [ "🍒", "🍉", "🍊", "🍓", "🍇", "🥝" ]
+export const Slots: FC<Props> = ({images}) => {
+  const [ slotImageOrders, setSlotImageOrders ] = useState<Set<string>[]>([ new Set(), new Set(), new Set() ])
+  const [ currentSelection, setCurrentSelection ] = useState<string>("")
 
   useEffect(() => {
-    // TODO: Populate possibleValues from user-added images
-    const possibleValues = []
+    //   Populate each set of slot options with randomized values from possibleValues. Don't repeat values in the same map.
+    setSlotImageOrders((currentSlotImageOrders) => {
+      return currentSlotImageOrders.map(() => {
+        const newSlotImageOrder = new Set<string>()
+        const availableValues = [ ...images.keys() ]
 
-    //   Populate each set of slot options with randomized values from possibleValues
-    setSlotOptions((currentSlotOptions) => {
+        for (let i = 0; i < images.size; i ++) {
+          const randomNumber = Math.floor(Math.random() * availableValues.length)
 
+          newSlotImageOrder.add(availableValues[ randomNumber ])
+          availableValues.splice(randomNumber, 1)
+        }
+
+        return newSlotImageOrder
+      })
     })
-  }, [ setSlotOptions ])
+  }, [ setSlotImageOrders, images ])
+
   // to trigger rolling and maintain state
   const roll = () => {
-    // looping through all 3 slots to start rolling
-    slotRefs.forEach((ref, i) => {
-      if (ref === null || !ref.current) return
+    const randomValue = Math.floor(Math.random() * images.size)
 
-      // this will trigger rolling effect
-      triggerSlotRotation(ref.current)
-    })
+    setCurrentSelection([ ...images.keys() ][ randomValue ])
   }
-
-  // this will create a rolling effect and return random selected option
-  const triggerSlotRotation = (ref: MutableRefObject<HTMLDivElement>) => {
-    if (ref === null) return
-
-    function setTop(top: number) {
-      if (ref === null) return
-
-      ref.style.top = `${top}px`
-    }
-
-    const options = ref.children
-    const randomOption = Math.floor(Math.random() * fruits.length)
-
-    const chosenOption = options[ randomOption ]
-    setTop(- chosenOption.offsetTop + 2)
-
-    return fruits[ randomOption ]
-  }
-
-  const slotRefs = [ useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null) ]
 
   return (
     <div className="SlotMachine">
       <main>
-        <Slot options={fruits} ref={slotRefs[ 0 ]} />
-        <Slot options={fruits} ref={slotRefs[ 1 ]} />
-        <Slot options={fruits} ref={slotRefs[ 2 ]} />
+        {slotImageOrders.map((imageOrder, i) => (
+          <Slot
+            key={i}
+            images={images}
+            imageOrder={imageOrder}
+            currentSelection={currentSelection}
+          />),
+        )}
       </main>
       <button
         type={"button"}
