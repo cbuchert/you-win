@@ -40,7 +40,7 @@ export const Slots: FC<Props> = ({ images }) => {
 
   return (
     <div className={styles.slotMachine}>
-      <main className={"mt-24 grid grid-cols-3 gap-4 justify-center"} onClick={roll}>
+      <main className={"grid grid-cols-3 gap-4 justify-center"} onClick={roll}>
         <div />
         <Slot
           images={images}
