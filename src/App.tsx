@@ -6,7 +6,7 @@ import { Slots } from "./components/Slots.tsx"
 export type Images = Map<string, string>
 
 function App() {
-  const [ isOpen, setIsOpen ] = useState(true)
+  const [ isOpen] = useState(true)
   const [ images, setImages ] = useState<Images>(new Map())
   const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length) {
