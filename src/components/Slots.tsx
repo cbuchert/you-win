@@ -1,60 +1,54 @@
 import { FC, useEffect, useState } from "react"
 import { Images } from "../App.tsx"
 import { Slot } from "./Slot.tsx"
+import styles from "./Slots.module.css"
 
 type Props = {
   images: Images
 }
 
-export const Slots: FC<Props> = ({images}) => {
-  const [ slotImageOrders, setSlotImageOrders ] = useState<Set<string>[]>([ new Set(), new Set(), new Set() ])
-  const [ currentSelection, setCurrentSelection ] = useState<string>("")
+export const Slots: FC<Props> = ({ images }) => {
+  const [ slot1ImageOrder, setSlot1ImageOrder ] = useState<Set<string>>(new Set())
+  const [ slot1CurrentSelection, setSlot1CurrentSelection ] = useState<string>("")
 
   useEffect(() => {
     //   Populate each set of slot options with randomized values from possibleValues. Don't repeat values in the same map.
-    setSlotImageOrders((currentSlotImageOrders) => {
-      return currentSlotImageOrders.map(() => {
-        const newSlotImageOrder = new Set<string>()
-        const availableValues = [ ...images.keys() ]
+    setSlot1ImageOrder(buildSlotImageOrders())
+  }, [ images ])
 
-        for (let i = 0; i < images.size; i ++) {
-          const randomNumber = Math.floor(Math.random() * availableValues.length)
+  function buildSlotImageOrders() {
+    const newSlotImageOrder = new Set<string>()
+    const availableValues = [ ...images.keys() ]
 
-          newSlotImageOrder.add(availableValues[ randomNumber ])
-          availableValues.splice(randomNumber, 1)
-        }
+    for (let i = 0; i < images.size; i ++) {
+      const randomNumber = Math.floor(Math.random() * availableValues.length)
 
-        return newSlotImageOrder
-      })
-    })
-  }, [ setSlotImageOrders, images ])
+      newSlotImageOrder.add(availableValues[ randomNumber ])
+      availableValues.splice(randomNumber, 1)
+    }
+
+    return newSlotImageOrder
+  }
 
   // to trigger rolling and maintain state
   const roll = () => {
     const randomValue = Math.floor(Math.random() * images.size)
+    const randomImage = [ ...images.keys() ][ randomValue ]
 
-    setCurrentSelection([ ...images.keys() ][ randomValue ])
+    setSlot1CurrentSelection(randomImage)
   }
 
   return (
-    <div className="SlotMachine">
-      <main>
-        {slotImageOrders.map((imageOrder, i) => (
-          <Slot
-            key={i}
-            images={images}
-            imageOrder={imageOrder}
-            currentSelection={currentSelection}
-          />),
-        )}
+    <div className={styles.slotMachine}>
+      <main className={"mt-24 grid grid-cols-3 gap-4 justify-center"} onClick={roll}>
+        <div />
+        <Slot
+          images={images}
+          imageOrder={slot1ImageOrder}
+          currentSelection={slot1CurrentSelection}
+          id={"slot1"}
+        />
       </main>
-      <button
-        type={"button"}
-        className={"roll"}
-        onClick={roll}
-      >
-        Roll
-      </button>
     </div>
   )
 

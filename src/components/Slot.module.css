@@ -1,0 +1,27 @@
+.container {
+  @apply relative;
+  @apply inline-block;
+  @apply h-[46rem] w-full;
+}
+
+.image {
+  @apply h-96;
+}
+
+.section {
+  @apply transition duration-500 ease-in-out;
+  @apply absolute;
+  @apply flex flex-col justify-center;
+  @apply top-0;
+  @apply w-full;
+  @apply h-full;
+  @apply overflow-hidden;
+  @apply bg-gray-50;
+  @apply rounded-lg;
+  @apply border-8 border-gray-300;
+  @apply text-white;
+  @apply font-sans;
+  @apply text-center;
+  @apply text-2xl;
+  @apply cursor-default;
+}
